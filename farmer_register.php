@@ -1,0 +1,112 @@
+    <?php
+    include_once __DIR__ . '/includes/db.php';
+
+    $message = "";
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $farmer_name = mysqli_real_escape_string($conn, $_POST['farmer_name']);
+        $farmer_email = mysqli_real_escape_string($conn, $_POST['farmer_email']);
+        $password = mysqli_real_escape_string($conn, $_POST['password']);
+        $confirm_password = mysqli_real_escape_string($conn, $_POST['confirm_password']);
+
+        if ($password !== $confirm_password) {
+            $message = "รหัสผ่านไม่ตรงกัน";
+        } else {
+            $check = mysqli_query($conn, "SELECT * FROM farmers WHERE farmer_email = '$farmer_email'");
+            if (mysqli_num_rows($check) > 0) {
+                $message = "อีเมลนี้ถูกใช้ไปแล้ว";
+            } else {
+                // ไม่เข้ารหัส password
+                // บันทึกโดย owner_id เป็น NULL และรออนุมัติ
+                $sql = "INSERT INTO farmers (farmer_name, farmer_email, farmer_password, is_approved, owner_id, status)
+                        VALUES ('$farmer_name', '$farmer_email', '$password', 0, NULL, 'pending')";
+                if (mysqli_query($conn, $sql)) {
+                    header("Location: login.php?msg=registered_farmer");
+                    exit();
+                } else {
+                    $message = "เกิดข้อผิดพลาดในการสมัครสมาชิก";
+                }
+            }
+        }
+    }
+
+    ?>
+
+    <!DOCTYPE html>
+    <html lang="th">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>สมัครเกษตรกร</title>
+        <link rel="stylesheet" href="./css/login-style.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+        <style>
+            form input {
+                display: block;
+                width: 100%;
+                margin-bottom: 16px;
+                padding: 12px 14px;
+                font-size: 1rem;
+                border: 2px solid #cbb18a;
+                border-radius: 10px;
+                background-color: #fffaf5;
+                transition: all 0.3s ease;
+            }
+
+            form input:focus {
+                outline: none;
+                border-color: #a47454;
+                box-shadow: 0 0 8px rgba(164, 116, 84, 0.4);
+            }
+
+            form button.card-btn {
+                margin-top: 10px;
+            }
+
+            .register-link {
+                margin-top: 20px;
+                font-size: 0.95rem;
+                text-align: center;
+            }
+
+            .register-link a {
+                color: #a47454;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .register-link a:hover {
+                color: #7c5a2a;
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <div class="box index-box">
+                <h1><i class="fas fa-tractor"></i> สมัครเกษตรกร</h1>
+
+                <?php if ($message): ?>
+                    <div class="alert-error"><?php echo htmlspecialchars($message); ?></div>
+                <?php endif; ?>
+
+                <form method="post" action="">
+                    <input type="text" name="farmer_name" placeholder="ชื่อเกษตรกร" required />
+                    <input type="email" name="farmer_email" placeholder="อีเมล" required />
+                    <input type="password" name="password" placeholder="รหัสผ่าน" required />
+                    <input type="password" name="confirm_password" placeholder="ยืนยันรหัสผ่าน" required />
+                    <button type="submit" class="card-btn">
+                        <i class="fas fa-tractor"></i> สมัครสมาชิก
+                    </button>
+                </form>
+
+                <div class="register-link">
+                    มีบัญชีแล้ว? <a href="login.php">เข้าสู่ระบบที่นี่</a>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    </html>
