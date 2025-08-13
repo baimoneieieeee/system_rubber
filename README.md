@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 rubber_management_system/
 │
 ├── css/
@@ -94,3 +95,6 @@ rubber_management_system/
 ├── owner_register.php           # สมัครสมาชิกเจ้าของสวน
 ├── register.php                 # สมัครสมาชิกเกษตรกร
 └── README.md                    # คำอธิบายโปรเจกต์ (ถ้ามี)
+=======
+# system_rubber
+>>>>>>> f78bcf21aba885ae3674438b426f0166680a5730
